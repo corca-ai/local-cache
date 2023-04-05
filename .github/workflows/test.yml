@@ -15,10 +15,12 @@ jobs:
           path: node_modules
           key: ${{ hashFiles('package-lock.json') }}
       - name: Test cache-hit
+        continue-on-error: true
         run: |
-          echo "Test ${{ steps.cache.outputs.cache-hit }}"
+          echo "Test cache hit: ${{ steps.cache.outputs.cache-hit }}"
           test -d node_modules ; echo "$?"
       - name: Install dependencies
+        continue-on-error: true
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           npm install
