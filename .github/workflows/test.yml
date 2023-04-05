@@ -1,24 +1,25 @@
-name: 'build-test'
-on: # rebuild any PRs and main branch changes
-  pull_request:
-  push:
-    branches:
-      - main
-      - 'releases/*'
+name: 'Cache test'
+
+on: [push]
 
 jobs:
-  build: # make sure build/ci work properly
+  test:
     runs-on: ubuntu-latest
+    name: A job to test cache
     steps:
-      - uses: actions/checkout@v2
-      - run: |
-          npm install
-      - run: |
-          npm run all
-  test: # make sure the action works on a clean machine without building
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: corca-ai/local-cache@develop
+        id: cache
         with:
-          milliseconds: 1000
+          path: node_modules
+          key: ${{ hashFiles('package-lock.json') }}
+      - name: Test cache-hit
+        run: |
+          echo "Test ${{ steps.cache.outputs.cache-hit }}"
+          test -d node_modules ; echo "$?"
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          npm install
+          test -d /tmp/.cache/${{ hashFiles('package-lock.json') }} ; echo "$?"

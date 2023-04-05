@@ -1,9 +1,9 @@
 {
-  "name": "typescript-action",
-  "version": "0.0.0",
+  "name": "local-cache",
+  "version": "1.0.0",
   "private": true,
-  "description": "TypeScript template action",
-  "main": "lib/main.js",
+  "description": "Cache artifacts to improve workflow execution time on self hosted machine",
+  "main": "lib/restore/index.js",
   "scripts": {
     "build": "tsc",
     "format": "prettier --write '**/*.ts'",

@@ -1,11 +1,17 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'local-cache'
+description: 'Cache artifacts to improve workflow execution time on self hosted machine'
 inputs:
-  milliseconds: # change this
+  path:
+    description: 'Where to cache'
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  key:
+    description: 'How to check cache hit'
+    required: true
+outputs:
+  cache-hit:
+    description: 'Cache hit or not'
 runs:
   using: 'node16'
-  main: 'dist/index.js'
+  main: 'dist/restore/index.js'
+  post: 'dist/save/index.js'
+  post-if: success()
