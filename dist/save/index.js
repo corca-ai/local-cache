@@ -3963,7 +3963,7 @@ function run() {
             if (cacheHit === 'false') {
                 const cachePath = core.getState('cache-path');
                 const path = core.getState('path');
-                const { stdout, stderr } = yield (0, cache_1.exec)(`/bin/bash -c "mkdir -p ${cachePath} && mv ${path}/* ${cachePath}"`);
+                const { stdout, stderr } = yield (0, cache_1.exec)(`/bin/bash -c "mkdir -p ${cachePath} && mv ./${path} ${cachePath}"`);
                 core.debug(stdout);
                 if (stderr)
                     core.error(stderr);
