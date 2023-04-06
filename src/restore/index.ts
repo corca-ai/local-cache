@@ -1,12 +1,21 @@
 import * as core from '@actions/core'
 import * as p from 'path'
-import {checkKey, checkPaths, exec, getCachePath} from '../utils/cache'
+import {
+  checkKey,
+  checkPaths,
+  exec,
+  getCacheBase,
+  getCachePath
+} from '../utils/cache'
 
 async function run(): Promise<void> {
   try {
     const key = core.getInput('key')
+    const restoreKeys = core.getMultilineInput('restore-keys')
+    const base = core.getInput('base')
     const path = core.getInput('path')
-    const cachePath = getCachePath(key)
+    const cacheBase = getCacheBase(base)
+    const cachePath = getCachePath(key, base)
 
     checkKey(key)
     checkPaths([path])
@@ -16,10 +25,11 @@ async function run(): Promise<void> {
     core.saveState('cache-path', cachePath)
 
     let {stdout, stderr} = await exec(
-      `/bin/bash -c "test -d ${cachePath} ; echo $? `
+      `find ${cacheBase} -name ${p.join(key, path)} -type d`
     )
+    await exec(`find ${stdout}`)
 
-    const cacheHit = stdout === '0' ? true : false
+    const cacheHit = stdout ? true : false
     core.setOutput('cache-hit', String(cacheHit))
     core.saveState('cache-hit', String(cacheHit))
 
@@ -33,6 +43,17 @@ async function run(): Promise<void> {
       if (!stderr) core.info(`Cache restored with key ${key}`)
     } else {
       core.info(`Cache not found for ${key}`)
+      for (const restoreKey of restoreKeys) {
+        ;({stdout, stderr} = await exec(
+          `/bin/bash -c "find ${cacheBase} -name "${restoreKey}*" -type d -printf "%Tc %p\n" | sort -n | tail -1 | rev | cut -d ' ' -f -1 | rev"`
+        ))
+        if (stdout) {
+          await exec(`ln -s ${p.join(stdout, path)} ${path}`)
+          if (!stderr)
+            core.info(`Cache restored with restore-key ${restoreKey}`)
+          break
+        }
+      }
     }
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)

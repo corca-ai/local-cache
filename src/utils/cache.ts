@@ -1,9 +1,16 @@
 import * as e from '@actions/exec'
 import * as p from 'path'
 
-export const getCachePath = (key: string): string => {
-  const BASE_CACHE_PATH = '/tmp/.cache'
-  return p.join(BASE_CACHE_PATH, key)
+export const getCacheBase = (base?: string): string => {
+  const BASE_CACHE_PATH = '/tmp/.cache/'
+  if (base && !base.endsWith('/')) {
+    base += '/'
+  }
+  return base ? base : BASE_CACHE_PATH
+}
+
+export const getCachePath = (key: string, base?: string): string => {
+  return p.join(getCacheBase(base), key)
 }
 
 class ValidationError extends Error {

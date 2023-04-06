@@ -1,6 +1,9 @@
 name: 'local-cache'
 description: 'Cache artifacts to improve workflow execution time on self hosted machine'
 inputs:
+  base:
+    description: 'A top directory to cache and restore'
+    required: false
   path:
     description: 'A directory to cache and restore.'
     required: true

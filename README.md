@@ -5,13 +5,21 @@ Artifacts are cached in the /tmp/.cache.
 
 ## Inputs
 
+### `base`
+
+**Optional** A top directory to cache and restore.
+
 ### `path`
 
-**Required** Where to cache
+**Required** A directory to cache and restore.
 
 ### `key`
 
-**Required** How to check cache hit
+**Required** An explicit key for a cache entry.
+
+### `restore-keys`
+
+**Optional** An ordered list of prefix-matched keys to use for restoring stale cache if no cache hit occurred for key.
 
 ## Outputs
 

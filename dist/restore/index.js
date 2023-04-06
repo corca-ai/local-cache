@@ -3960,15 +3960,19 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const key = core.getInput('key');
+            const restoreKeys = core.getMultilineInput('restore-keys');
+            const base = core.getInput('base');
             const path = core.getInput('path');
-            const cachePath = (0, cache_1.getCachePath)(key);
+            const cacheBase = (0, cache_1.getCacheBase)(base);
+            const cachePath = (0, cache_1.getCachePath)(key, base);
             (0, cache_1.checkKey)(key);
             (0, cache_1.checkPaths)([path]);
             core.saveState('key', key);
             core.saveState('path', path);
             core.saveState('cache-path', cachePath);
-            let { stdout, stderr } = yield (0, cache_1.exec)(`/bin/bash -c "test -d ${cachePath} ; echo $? `);
-            const cacheHit = stdout === '0' ? true : false;
+            let { stdout, stderr } = yield (0, cache_1.exec)(`find ${cacheBase} -name ${p.join(key, path)} -type d`);
+            yield (0, cache_1.exec)(`find ${stdout}`);
+            const cacheHit = stdout ? true : false;
             core.setOutput('cache-hit', String(cacheHit));
             core.saveState('cache-hit', String(cacheHit));
             if (cacheHit === true) {
@@ -3982,6 +3986,16 @@ function run() {
             }
             else {
                 core.info(`Cache not found for ${key}`);
+                for (const restoreKey of restoreKeys) {
+                    ;
+                    ({ stdout, stderr } = yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -name "${restoreKey}*" -type d -printf "%Tc %p\n" | sort -n | tail -1 | rev | cut -d ' ' -f -1 | rev"`));
+                    if (stdout) {
+                        yield (0, cache_1.exec)(`ln -s ${p.join(stdout, path)} ${path}`);
+                        if (!stderr)
+                            core.info(`Cache restored with restore-key ${restoreKey}`);
+                        break;
+                    }
+                }
             }
         }
         catch (error) {
@@ -4029,12 +4043,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.exec = exports.checkKey = exports.checkPaths = exports.getCachePath = void 0;
+exports.exec = exports.checkKey = exports.checkPaths = exports.getCachePath = exports.getCacheBase = void 0;
 const e = __importStar(__nccwpck_require__(372));
 const p = __importStar(__nccwpck_require__(17));
-const getCachePath = (key) => {
-    const BASE_CACHE_PATH = '/tmp/.cache';
-    return p.join(BASE_CACHE_PATH, key);
+const getCacheBase = (base) => {
+    const BASE_CACHE_PATH = '/tmp/.cache/';
+    if (base && !base.endsWith('/')) {
+        base += '/';
+    }
+    return base ? base : BASE_CACHE_PATH;
+};
+exports.getCacheBase = getCacheBase;
+const getCachePath = (key, base) => {
+    return p.join((0, exports.getCacheBase)(base), key);
 };
 exports.getCachePath = getCachePath;
 class ValidationError extends Error {
