@@ -51,7 +51,12 @@ async function run(): Promise<void> {
             `/bin/bash -c "find ${cacheBase} -name '${restoreKey}*' -type d -printf "%Tc %p\n" | sort -n | tail -1 | rev | cut -d ' ' -f -1 | rev"`
           ))
           if (stdout) {
-            await exec(`ln -s ${p.join(stdout, path)} ${path}`)
+            await exec(
+              `(cd ${p.join(
+                stdout,
+                path
+              )}; tar cvf - .) | (cd ${path}; tar xvfp -)`
+            )
             if (!stderr)
               core.info(`Cache restored with restore-key ${restoreKey}`)
             break

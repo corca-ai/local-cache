@@ -3993,7 +3993,7 @@ function run() {
                         ;
                         ({ stdout, stderr } = yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -name '${restoreKey}*' -type d -printf "%Tc %p\n" | sort -n | tail -1 | rev | cut -d ' ' -f -1 | rev"`));
                         if (stdout) {
-                            yield (0, cache_1.exec)(`ln -s ${p.join(stdout, path)} ${path}`);
+                            yield (0, cache_1.exec)(`(cd ${p.join(stdout, path)}; tar cvf - .) | (cd ${path}; tar xvfp -)`);
                             if (!stderr)
                                 core.info(`Cache restored with restore-key ${restoreKey}`);
                             break;
