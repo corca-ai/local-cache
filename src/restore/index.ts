@@ -24,9 +24,7 @@ async function run(): Promise<void> {
     core.saveState('path', path)
     core.saveState('cache-path', cachePath)
 
-    let {stdout, stderr} = await exec(
-      `find ${cacheBase} -name ${p.join(key, path)} -type d`
-    )
+    let {stdout, stderr} = await exec(`find ${cacheBase} -name ${key} -type d`)
     await exec(`find ${stdout}`)
 
     const cacheHit = stdout ? true : false
