@@ -3954,7 +3954,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(707));
-const exec = __importStar(__nccwpck_require__(372));
 const cache_1 = __nccwpck_require__(462);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -3964,10 +3963,7 @@ function run() {
             if (cacheHit === 'false') {
                 const cachePath = core.getState('cache-path');
                 const path = core.getState('path');
-                const { stdout, stderr, listeners } = (0, cache_1.options)('', '');
-                yield exec.exec(`mkdir -p ${cachePath} && mv ${path} ${cachePath}`, [], {
-                    listeners
-                });
+                const { stdout, stderr } = yield (0, cache_1.exec)(`mkdir -p ${cachePath} && mv ${path} ${cachePath}`);
                 core.debug(stdout);
                 if (stderr)
                     core.error(stderr);
@@ -4014,8 +4010,18 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.options = exports.checkKey = exports.checkPaths = exports.getCachePath = void 0;
+exports.exec = exports.checkKey = exports.checkPaths = exports.getCachePath = void 0;
+const e = __importStar(__nccwpck_require__(372));
 const p = __importStar(__nccwpck_require__(17));
 const getCachePath = (key) => {
     const BASE_CACHE_PATH = '/tmp/.cache';
@@ -4056,7 +4062,12 @@ const options = (stdout, stderr) => {
     };
     return { stdout, stderr, listeners };
 };
-exports.options = options;
+const exec = (command) => __awaiter(void 0, void 0, void 0, function* () {
+    const { stdout, stderr, listeners } = options('', '');
+    yield e.exec(command, [], { listeners });
+    return { stdout, stderr };
+});
+exports.exec = exec;
 
 
 /***/ }),

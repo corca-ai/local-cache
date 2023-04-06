@@ -2,11 +2,14 @@ name: 'local-cache'
 description: 'Cache artifacts to improve workflow execution time on self hosted machine'
 inputs:
   path:
-    description: 'Where to cache'
+    description: 'A directory to cache and restore.'
     required: true
   key:
-    description: 'How to check cache hit'
+    description: 'An explicit key for a cache entry.'
     required: true
+  restore-keys:
+    description: 'An ordered list of prefix-matched keys to use for restoring stale cache if no cache hit occurred for key.'
+    required: false
 outputs:
   cache-hit:
     description: 'Cache hit or not'
