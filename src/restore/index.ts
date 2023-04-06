@@ -1,23 +1,33 @@
 import * as core from '@actions/core'
+import * as exec from '@actions/exec'
 import * as p from 'path'
-import {BASE_CACHE_PATH, shell} from '../utils/shell'
+import {checkKey, checkPaths, getCachePath, options} from '../utils/cache'
 
 async function run(): Promise<void> {
   try {
     const key = core.getInput('key')
-    const cachePath = p.join(BASE_CACHE_PATH, key)
+    const path = core.getInput('path')
+    const cachePath = getCachePath(key)
 
-    const checkCache = await shell(`test -d ${cachePath} ; echo "$?"`)
-    const cacheHit = checkCache.stdout === '0' ? 'true' : 'false'
+    checkKey(key)
+    checkPaths([path])
 
+    core.saveState('key', key)
+    core.saveState('path', path)
+    core.saveState('cache-path', cachePath)
+
+    let {stdout, stderr, listeners} = options('', '')
+    await exec.exec(`test -d ${cachePath} ; echo "$?"`, [], {listeners})
+
+    const cacheHit = stdout === '0' ? 'true' : 'false'
     core.setOutput('cache-hit', cacheHit)
     core.saveState('cache-hit', cacheHit)
 
     if (cacheHit === 'true') {
-      const path = core.getInput('path')
-      const {stdout, stderr} = await shell(
-        `ln -s ${p.join(cachePath, path)} ${path}`
-      )
+      ;({stdout, stderr, listeners} = options('', ''))
+      await exec.exec(`ln -s ${p.join(cachePath, path)} ${path}`, [], {
+        listeners
+      })
 
       core.debug(stdout)
       if (stderr) core.error(stderr)

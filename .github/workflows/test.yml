@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   test:
-    runs-on: [self-hosted]
+    runs-on: ubuntu-latest
     name: A job to test cache
     steps:
       - name: Checkout

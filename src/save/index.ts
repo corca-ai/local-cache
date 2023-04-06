@@ -1,18 +1,20 @@
 import * as core from '@actions/core'
-import * as p from 'path'
-import {BASE_CACHE_PATH, shell} from '../utils/shell'
+import * as exec from '@actions/exec'
+import {options} from '../utils/cache'
 
 async function run(): Promise<void> {
   try {
     const cacheHit = core.getState('cache-hit')
-    const key = core.getInput('key')
+    const key = core.getState('key')
 
     if (cacheHit === 'false') {
-      const path = core.getInput('path')
-      const cachePath = p.join(BASE_CACHE_PATH, key)
-      const {stdout, stderr} = await shell(
-        `mkdir -p ${cachePath} && mv ${path} ${cachePath}`
-      )
+      const cachePath = core.getState('cache-path')
+      const path = core.getState('path')
+
+      const {stdout, stderr, listeners} = options('', '')
+      await exec.exec(`mkdir -p ${cachePath} && mv ${path} ${cachePath}`, [], {
+        listeners
+      })
 
       core.debug(stdout)
       if (stderr) core.error(stderr)
