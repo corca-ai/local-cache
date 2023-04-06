@@ -4058,7 +4058,9 @@ const checkKey = (key) => {
     }
 };
 exports.checkKey = checkKey;
-const options = (stdout, stderr) => {
+const options = () => {
+    let stdout = '';
+    let stderr = '';
     const listeners = {
         stdout: (data) => {
             stdout += data.toString();
@@ -4070,7 +4072,7 @@ const options = (stdout, stderr) => {
     return { stdout, stderr, listeners };
 };
 const exec = (command) => __awaiter(void 0, void 0, void 0, function* () {
-    const { stdout, stderr, listeners } = options('', '');
+    const { stdout, stderr, listeners } = options();
     yield e.exec(command, [], { listeners });
     return { stdout, stderr };
 });

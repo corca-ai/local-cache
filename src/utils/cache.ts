@@ -42,10 +42,10 @@ export const checkKey = (key: string): void => {
   }
 }
 
-const options = (
-  stdout: string,
-  stderr: string
-): {stdout: string; stderr: string; listeners: {}} => {
+const options = (): {stdout: string; stderr: string; listeners: {}} => {
+  let stdout = ''
+  let stderr = ''
+
   const listeners = {
     stdout: (data: Buffer) => {
       stdout += data.toString()
@@ -60,7 +60,7 @@ const options = (
 export const exec = async (
   command: string
 ): Promise<{stdout: string; stderr: string}> => {
-  const {stdout, stderr, listeners} = options('', '')
+  const {stdout, stderr, listeners} = options()
   await e.exec(command, [], {listeners})
   return {stdout, stderr}
 }
