@@ -1,5 +1,6 @@
 import * as e from '@actions/exec'
 import * as p from 'path'
+import core from '@actions/core'
 
 export const getCacheBase = (base: string): string => {
   if (base && !base.endsWith('/')) {
@@ -53,6 +54,7 @@ const options = (): {stdout: string; stderr: string; listeners: {}} => {
   const listeners = {
     stdout: (data: Buffer) => {
       stdout += data.toString()
+      core.info(stdout)
     },
     stderr: (data: Buffer) => {
       stderr += data.toString()
@@ -65,6 +67,7 @@ export const exec = async (
   command: string
 ): Promise<{stdout: string; stderr: string}> => {
   const {stdout, stderr, listeners} = options()
+  core.info(stdout)
   await e.exec(command, [], {listeners})
   return {stdout, stderr}
 }
