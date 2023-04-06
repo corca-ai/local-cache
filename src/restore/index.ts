@@ -16,7 +16,7 @@ async function run(): Promise<void> {
     core.saveState('path', path)
     core.saveState('cache-path', cachePath)
 
-    const status = await exec.exec(`test`, [`-d ${cachePath}`, `; echo "$?"`], {
+    const status = await exec.exec(`test`, ['-d', `${cachePath}`], {
       ignoreReturnCode: true
     })
     await exec.exec(`check cache ended with status ${status}`)
