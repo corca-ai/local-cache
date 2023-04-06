@@ -3964,7 +3964,7 @@ function run() {
             const base = core.getInput('base');
             const path = core.getInput('path');
             const cacheBase = (0, cache_1.getCacheBase)(base);
-            const cachePath = (0, cache_1.getCachePath)(key, base);
+            const cachePath = (0, cache_1.getCachePath)(key, path, base);
             (0, cache_1.checkKey)(key);
             (0, cache_1.checkPaths)([path]);
             core.saveState('key', key);
@@ -3979,7 +3979,7 @@ function run() {
             core.saveState('cache-hit', String(cacheHit));
             if (cacheHit === true) {
                 ;
-                ({ stdout, stderr } = yield (0, cache_1.exec)(`ln -s ${p.join(cachePath, path)} ${path}`));
+                ({ stdout, stderr } = yield (0, cache_1.exec)(`ln -s ${cachePath} ${path}`));
                 core.debug(stdout);
                 if (stderr)
                     core.error(stderr);
@@ -4057,8 +4057,8 @@ const getCacheBase = (base) => {
     return base;
 };
 exports.getCacheBase = getCacheBase;
-const getCachePath = (key, base) => {
-    return p.join((0, exports.getCacheBase)(base), key);
+const getCachePath = (key, path, base) => {
+    return p.join((0, exports.getCacheBase)(base), key, path);
 };
 exports.getCachePath = getCachePath;
 class ValidationError extends Error {

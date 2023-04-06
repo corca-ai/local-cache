@@ -15,7 +15,7 @@ async function run(): Promise<void> {
     const base = core.getInput('base')
     const path = core.getInput('path')
     const cacheBase = getCacheBase(base)
-    const cachePath = getCachePath(key, base)
+    const cachePath = getCachePath(key, path, base)
 
     checkKey(key)
     checkPaths([path])
@@ -35,9 +35,7 @@ async function run(): Promise<void> {
     core.saveState('cache-hit', String(cacheHit))
 
     if (cacheHit === true) {
-      ;({stdout, stderr} = await exec(
-        `ln -s ${p.join(cachePath, path)} ${path}`
-      ))
+      ;({stdout, stderr} = await exec(`ln -s ${cachePath} ${path}`))
 
       core.debug(stdout)
       if (stderr) core.error(stderr)
