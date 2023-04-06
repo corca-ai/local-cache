@@ -3968,7 +3968,7 @@ function run() {
             core.saveState('key', key);
             core.saveState('path', path);
             core.saveState('cache-path', cachePath);
-            const status = yield exec.exec(`test -d ${cachePath}`, [`; echo "$?"`], {
+            const status = yield exec.exec(`test -d "${cachePath}"`, [`; echo "$?"`], {
                 ignoreReturnCode: true
             });
             yield exec.exec(`check cache ended with status ${status}`);
