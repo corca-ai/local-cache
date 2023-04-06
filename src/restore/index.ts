@@ -28,7 +28,7 @@ async function run(): Promise<void> {
     let {stdout, stderr} = await exec(
       `/bin/bash -c "find ${cacheBase} -name ${key} -type d"`
     )
-    await exec(`find ${stdout}`)
+    await exec(`echo "found ${stdout}"`)
 
     const cacheHit = stdout ? true : false
     core.setOutput('cache-hit', String(cacheHit))
