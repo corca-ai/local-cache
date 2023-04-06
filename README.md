@@ -17,10 +17,6 @@ Artifacts are cached in the /tmp/.cache.
 
 **Required** An explicit key for a cache entry.
 
-### `restore-keys`
-
-**Optional** An ordered list of prefix-matched keys to use for restoring stale cache if no cache hit occurred for key.
-
 ## Outputs
 
 ### `cache-hit`

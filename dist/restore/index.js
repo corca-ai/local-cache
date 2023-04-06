@@ -3954,13 +3954,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(707));
-const p = __importStar(__nccwpck_require__(17));
 const cache_1 = __nccwpck_require__(462);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const key = core.getInput('key');
-            const restoreKeys = core.getMultilineInput('restore-keys');
             const base = core.getInput('base');
             const path = core.getInput('path');
             const cacheBase = (0, cache_1.getCacheBase)(base);
@@ -3988,18 +3986,6 @@ function run() {
             }
             else {
                 core.info(`Cache not found for ${key}`);
-                if (restoreKeys.length > 0) {
-                    for (const restoreKey of restoreKeys) {
-                        ;
-                        ({ stdout, stderr } = yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -name '${restoreKey}*' -type d -printf "%Tc %p\n" | sort -n | tail -1 | rev | cut -d ' ' -f -1 | rev"`));
-                        if (stdout) {
-                            yield (0, cache_1.exec)(`(cd ${p.join(stdout, path)}; tar cvf - .) | (cd ${path}; tar xvfp -)`);
-                            if (!stderr)
-                                core.info(`Cache restored with restore-key ${restoreKey}`);
-                            break;
-                        }
-                    }
-                }
             }
         }
         catch (error) {

@@ -1,5 +1,4 @@
 import * as core from '@actions/core'
-import * as p from 'path'
 import {
   checkKey,
   checkPaths,
@@ -11,7 +10,6 @@ import {
 async function run(): Promise<void> {
   try {
     const key = core.getInput('key')
-    const restoreKeys = core.getMultilineInput('restore-keys')
     const base = core.getInput('base')
     const path = core.getInput('path')
     const cacheBase = getCacheBase(base)
@@ -42,25 +40,6 @@ async function run(): Promise<void> {
       if (!stderr) core.info(`Cache restored with key ${key}`)
     } else {
       core.info(`Cache not found for ${key}`)
-
-      if (restoreKeys.length > 0) {
-        for (const restoreKey of restoreKeys) {
-          ;({stdout, stderr} = await exec(
-            `/bin/bash -c "find ${cacheBase} -name '${restoreKey}*' -type d -printf "%Tc %p\n" | sort -n | tail -1 | rev | cut -d ' ' -f -1 | rev"`
-          ))
-          if (stdout) {
-            await exec(
-              `(cd ${p.join(
-                stdout,
-                path
-              )}; tar cvf - .) | (cd ${path}; tar xvfp -)`
-            )
-            if (!stderr)
-              core.info(`Cache restored with restore-key ${restoreKey}`)
-            break
-          }
-        }
-      }
     }
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)

@@ -1,5 +1,4 @@
 import * as core from '@actions/core'
-import * as p from 'path'
 import {exec} from '../utils/cache'
 
 async function run(): Promise<void> {
