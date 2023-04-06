@@ -1,4 +1,5 @@
 import * as core from '@actions/core'
+import * as p from 'path'
 import {exec} from '../utils/cache'
 
 async function run(): Promise<void> {
@@ -11,7 +12,10 @@ async function run(): Promise<void> {
       const path = core.getState('path')
 
       const {stdout, stderr} = await exec(
-        `/bin/bash -c "mkdir -p ${cachePath} && mv ${path} ${cachePath}"`
+        `/bin/bash -c "mkdir -p ${cachePath} && mv ${path} ${p.join(
+          cachePath,
+          path
+        )}"`
       )
 
       core.debug(stdout)

@@ -3954,6 +3954,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(707));
+const p = __importStar(__nccwpck_require__(17));
 const cache_1 = __nccwpck_require__(462);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -3963,7 +3964,7 @@ function run() {
             if (cacheHit === 'false') {
                 const cachePath = core.getState('cache-path');
                 const path = core.getState('path');
-                const { stdout, stderr } = yield (0, cache_1.exec)(`/bin/bash -c "mkdir -p ${cachePath} && mv ${path} ${cachePath}"`);
+                const { stdout, stderr } = yield (0, cache_1.exec)(`/bin/bash -c "mkdir -p ${cachePath} && mv ${path} ${p.join(cachePath, path)}"`);
                 core.debug(stdout);
                 if (stderr)
                     core.error(stderr);
