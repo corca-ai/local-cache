@@ -4051,11 +4051,10 @@ exports.exec = exports.checkKey = exports.checkPaths = exports.getCachePath = ex
 const e = __importStar(__nccwpck_require__(372));
 const p = __importStar(__nccwpck_require__(17));
 const getCacheBase = (base) => {
-    const BASE_CACHE_PATH = '/tmp/.cache/';
     if (base && !base.endsWith('/')) {
         base += '/';
     }
-    return base ? base : BASE_CACHE_PATH;
+    return base;
 };
 exports.getCacheBase = getCacheBase;
 const getCachePath = (key, base) => {

@@ -1,15 +1,14 @@
 import * as e from '@actions/exec'
 import * as p from 'path'
 
-export const getCacheBase = (base?: string): string => {
-  const BASE_CACHE_PATH = '/tmp/.cache/'
+export const getCacheBase = (base: string): string => {
   if (base && !base.endsWith('/')) {
     base += '/'
   }
-  return base ? base : BASE_CACHE_PATH
+  return base
 }
 
-export const getCachePath = (key: string, base?: string): string => {
+export const getCachePath = (key: string, base: string): string => {
   return p.join(getCacheBase(base), key)
 }
 
