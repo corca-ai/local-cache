@@ -3968,17 +3968,15 @@ function run() {
             core.saveState('key', key);
             core.saveState('path', path);
             core.saveState('cache-path', cachePath);
-            let { stdout, stderr, listeners } = (0, cache_1.options)('', '');
-            yield exec.exec(`test -d ${cachePath}`, [], {
+            const status = yield exec.exec(`test -d ${cachePath}`, [], {
                 ignoreReturnCode: true
             });
-            yield exec.exec(`echo "$?"`, [], { listeners });
-            const cacheHit = stdout === '0' ? 'true' : 'false';
+            yield exec.exec(`check cache ended with status ${status}`);
+            const cacheHit = status === 0 ? 'true' : 'false';
             core.setOutput('cache-hit', cacheHit);
             core.saveState('cache-hit', cacheHit);
             if (cacheHit === 'true') {
-                ;
-                ({ stdout, stderr, listeners } = (0, cache_1.options)('', ''));
+                const { stdout, stderr, listeners } = (0, cache_1.options)('', '');
                 yield exec.exec(`ln -s ${p.join(cachePath, path)} ${path}`, [], {
                     listeners
                 });
