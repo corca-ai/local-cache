@@ -3987,14 +3987,16 @@ function run() {
             }
             else {
                 core.info(`Cache not found for ${key}`);
-                for (const restoreKey of restoreKeys) {
-                    ;
-                    ({ stdout, stderr } = yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -name '${restoreKey}*' -type d -printf "%Tc %p\n" | sort -n | tail -1 | rev | cut -d ' ' -f -1 | rev"`));
-                    if (stdout) {
-                        yield (0, cache_1.exec)(`ln -s ${p.join(stdout, path)} ${path}`);
-                        if (!stderr)
-                            core.info(`Cache restored with restore-key ${restoreKey}`);
-                        break;
+                if (restoreKeys.length > 0) {
+                    for (const restoreKey of restoreKeys) {
+                        ;
+                        ({ stdout, stderr } = yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -name '${restoreKey}*' -type d -printf "%Tc %p\n" | sort -n | tail -1 | rev | cut -d ' ' -f -1 | rev"`));
+                        if (stdout) {
+                            yield (0, cache_1.exec)(`ln -s ${p.join(stdout, path)} ${path}`);
+                            if (!stderr)
+                                core.info(`Cache restored with restore-key ${restoreKey}`);
+                            break;
+                        }
                     }
                 }
             }
