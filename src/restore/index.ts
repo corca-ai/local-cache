@@ -16,18 +16,17 @@ async function run(): Promise<void> {
     core.saveState('path', path)
     core.saveState('cache-path', cachePath)
 
-    const status = await exec.exec(
-      `/bin/bash -c "test -d ${cachePath} ; echo $? `,
-      []
-    )
-    await exec.exec(`check cache ended with status ${status}`)
+    let {stdout, stderr, listeners} = options('', '')
+    await exec.exec(`/bin/bash -c "test -d ${cachePath} ; echo $? `, [], {
+      listeners
+    })
 
-    const cacheHit = status === 0 ? 'true' : 'false'
+    const cacheHit = stdout === '0' ? 'true' : 'false'
     core.setOutput('cache-hit', cacheHit)
     core.saveState('cache-hit', cacheHit)
 
     if (cacheHit === 'true') {
-      const {stdout, stderr, listeners} = options('', '')
+      ;({stdout, stderr, listeners} = options('', ''))
       await exec.exec(`ln -s ${p.join(cachePath, path)} ${path}`, [], {
         listeners
       })

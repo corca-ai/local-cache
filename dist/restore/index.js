@@ -3968,13 +3968,16 @@ function run() {
             core.saveState('key', key);
             core.saveState('path', path);
             core.saveState('cache-path', cachePath);
-            const status = yield exec.exec(`/bin/bash -c "test -d ${cachePath} ; echo $? `, []);
-            yield exec.exec(`check cache ended with status ${status}`);
-            const cacheHit = status === 0 ? 'true' : 'false';
+            let { stdout, stderr, listeners } = (0, cache_1.options)('', '');
+            yield exec.exec(`/bin/bash -c "test -d ${cachePath} ; echo $? `, [], {
+                listeners
+            });
+            const cacheHit = stdout === '0' ? 'true' : 'false';
             core.setOutput('cache-hit', cacheHit);
             core.saveState('cache-hit', cacheHit);
             if (cacheHit === 'true') {
-                const { stdout, stderr, listeners } = (0, cache_1.options)('', '');
+                ;
+                ({ stdout, stderr, listeners } = (0, cache_1.options)('', ''));
                 yield exec.exec(`ln -s ${p.join(cachePath, path)} ${path}`, [], {
                     listeners
                 });
