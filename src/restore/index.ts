@@ -25,7 +25,9 @@ async function run(): Promise<void> {
     core.saveState('cache-path', cachePath)
 
     await exec(`mkdir -p ${cacheBase}`)
-    let {stdout, stderr} = await exec(`find ${cacheBase} -name ${key} -type d`)
+    let {stdout, stderr} = await exec(
+      `/bin/bash -c "find ${cacheBase} -name ${key} -type d"`
+    )
     await exec(`find ${stdout}`)
 
     const cacheHit = stdout ? true : false
@@ -42,6 +44,7 @@ async function run(): Promise<void> {
       if (!stderr) core.info(`Cache restored with key ${key}`)
     } else {
       core.info(`Cache not found for ${key}`)
+
       for (const restoreKey of restoreKeys) {
         ;({stdout, stderr} = await exec(
           `/bin/bash -c "find ${cacheBase} -name '${restoreKey}*' -type d -printf "%Tc %p\n" | sort -n | tail -1 | rev | cut -d ' ' -f -1 | rev"`

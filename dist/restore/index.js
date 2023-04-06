@@ -3971,7 +3971,7 @@ function run() {
             core.saveState('path', path);
             core.saveState('cache-path', cachePath);
             yield (0, cache_1.exec)(`mkdir -p ${cacheBase}`);
-            let { stdout, stderr } = yield (0, cache_1.exec)(`find ${cacheBase} -name ${key} -type d`);
+            let { stdout, stderr } = yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -name ${key} -type d"`);
             yield (0, cache_1.exec)(`find ${stdout}`);
             const cacheHit = stdout ? true : false;
             core.setOutput('cache-hit', String(cacheHit));
