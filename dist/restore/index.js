@@ -3969,19 +3969,19 @@ function run() {
             core.saveState('path', path);
             core.saveState('cache-path', cachePath);
             yield (0, cache_1.exec)(`mkdir -p ${cacheBase}`);
-            let { output, error } = yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -name ${key} -type d"`);
-            if (output)
-                yield (0, cache_1.exec)(`echo "found ${output}"`);
-            const cacheHit = output ? true : false;
+            let { stdout, stderr } = yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -name ${key} -type d"`);
+            if (stdout)
+                yield (0, cache_1.exec)(`echo "found ${stdout}"`);
+            const cacheHit = stdout ? true : false;
             core.setOutput('cache-hit', String(cacheHit));
             core.saveState('cache-hit', String(cacheHit));
             if (cacheHit === true) {
                 ;
-                ({ output, error } = yield (0, cache_1.exec)(`ln -s ${cachePath} ${path}`));
-                core.debug(output);
-                if (error)
-                    core.error(error);
-                if (!error)
+                ({ stdout, stderr } = yield (0, cache_1.exec)(`ln -s ${cachePath} ${path}`));
+                core.debug(stdout);
+                if (stderr)
+                    core.error(stderr);
+                if (!stderr)
                     core.info(`Cache restored with key ${key}`);
             }
             else {
@@ -4070,24 +4070,9 @@ const checkKey = (key) => {
     }
 };
 exports.checkKey = checkKey;
-const debugOptions = () => {
-    let output = '';
-    let error = '';
-    const options = { listeners: {} };
-    options.listeners = {
-        stdout: (data) => {
-            output += data.toString();
-        },
-        stderr: (data) => {
-            error += data.toString();
-        }
-    };
-    return { output, error, options };
-};
 const exec = (command) => __awaiter(void 0, void 0, void 0, function* () {
-    const { output, error, options } = debugOptions();
-    yield e.exec(command, [], options);
-    return { output, error };
+    const { stdout, stderr } = yield e.getExecOutput(command);
+    return { stdout, stderr };
 });
 exports.exec = exec;
 

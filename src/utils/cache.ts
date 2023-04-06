@@ -46,30 +46,9 @@ export const checkKey = (key: string): void => {
   }
 }
 
-const debugOptions = (): {
-  output: string
-  error: string
-  options: {listeners: {}}
-} => {
-  let output = ''
-  let error = ''
-
-  const options = {listeners: {}}
-  options.listeners = {
-    stdout: (data: Buffer) => {
-      output += data.toString()
-    },
-    stderr: (data: Buffer) => {
-      error += data.toString()
-    }
-  }
-  return {output, error, options}
-}
-
 export const exec = async (
   command: string
-): Promise<{output: string; error: string}> => {
-  const {output, error, options} = debugOptions()
-  await e.exec(command, [], options)
-  return {output, error}
+): Promise<{stdout: string; stderr: string}> => {
+  const {stdout, stderr} = await e.getExecOutput(command)
+  return {stdout, stderr}
 }

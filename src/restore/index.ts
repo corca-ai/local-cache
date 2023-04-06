@@ -23,21 +23,21 @@ async function run(): Promise<void> {
     core.saveState('cache-path', cachePath)
 
     await exec(`mkdir -p ${cacheBase}`)
-    let {output, error} = await exec(
+    let {stdout, stderr} = await exec(
       `/bin/bash -c "find ${cacheBase} -name ${key} -type d"`
     )
-    if (output) await exec(`echo "found ${output}"`)
+    if (stdout) await exec(`echo "found ${stdout}"`)
 
-    const cacheHit = output ? true : false
+    const cacheHit = stdout ? true : false
     core.setOutput('cache-hit', String(cacheHit))
     core.saveState('cache-hit', String(cacheHit))
 
     if (cacheHit === true) {
-      ;({output, error} = await exec(`ln -s ${cachePath} ${path}`))
+      ;({stdout, stderr} = await exec(`ln -s ${cachePath} ${path}`))
 
-      core.debug(output)
-      if (error) core.error(error)
-      if (!error) core.info(`Cache restored with key ${key}`)
+      core.debug(stdout)
+      if (stderr) core.error(stderr)
+      if (!stderr) core.info(`Cache restored with key ${key}`)
     } else {
       core.info(`Cache not found for ${key}`)
     }

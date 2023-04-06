@@ -3963,11 +3963,11 @@ function run() {
             if (cacheHit === 'false') {
                 const cachePath = core.getState('cache-path');
                 const path = core.getState('path');
-                const { output, error } = yield (0, cache_1.exec)(`/bin/bash -c "mkdir -p ${cachePath} && mv ${path}/* ${cachePath}"`);
-                core.debug(output);
-                if (error)
-                    core.error(error);
-                if (!error)
+                const { stdout, stderr } = yield (0, cache_1.exec)(`/bin/bash -c "mkdir -p ${cachePath} && mv ${path}/* ${cachePath}"`);
+                core.debug(stdout);
+                if (stderr)
+                    core.error(stderr);
+                if (!stderr)
                     core.info(`Cache saved with key ${key}`);
             }
             else {
@@ -4057,24 +4057,9 @@ const checkKey = (key) => {
     }
 };
 exports.checkKey = checkKey;
-const debugOptions = () => {
-    let output = '';
-    let error = '';
-    const options = { listeners: {} };
-    options.listeners = {
-        stdout: (data) => {
-            output += data.toString();
-        },
-        stderr: (data) => {
-            error += data.toString();
-        }
-    };
-    return { output, error, options };
-};
 const exec = (command) => __awaiter(void 0, void 0, void 0, function* () {
-    const { output, error, options } = debugOptions();
-    yield e.exec(command, [], options);
-    return { output, error };
+    const { stdout, stderr } = yield e.getExecOutput(command);
+    return { stdout, stderr };
 });
 exports.exec = exec;
 
