@@ -3969,7 +3969,10 @@ function run() {
             core.saveState('path', path);
             core.saveState('cache-path', cachePath);
             let { stdout, stderr, listeners } = (0, cache_1.options)('', '');
-            yield exec.exec(`test -d ${cachePath} ; echo "$?"`, [], { listeners });
+            yield exec.exec(`test -d ${cachePath}`, [], {
+                ignoreReturnCode: true
+            });
+            yield exec.exec(`echo "$?"`, [], { listeners });
             const cacheHit = stdout === '0' ? 'true' : 'false';
             core.setOutput('cache-hit', cacheHit);
             core.saveState('cache-hit', cacheHit);

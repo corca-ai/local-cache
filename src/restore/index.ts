@@ -17,7 +17,10 @@ async function run(): Promise<void> {
     core.saveState('cache-path', cachePath)
 
     let {stdout, stderr, listeners} = options('', '')
-    await exec.exec(`test -d ${cachePath} ; echo "$?"`, [], {listeners})
+    await exec.exec(`test -d ${cachePath}`, [], {
+      ignoreReturnCode: true
+    })
+    await exec.exec(`echo "$?"`, [], {listeners})
 
     const cacheHit = stdout === '0' ? 'true' : 'false'
     core.setOutput('cache-hit', cacheHit)
