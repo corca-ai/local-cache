@@ -4032,14 +4032,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.exec = exports.checkKey = exports.checkPaths = exports.getCachePath = exports.getCacheBase = void 0;
 const e = __importStar(__nccwpck_require__(372));
 const p = __importStar(__nccwpck_require__(17));
-const core_1 = __importDefault(__nccwpck_require__(707));
 const getCacheBase = (base) => {
     if (base && !base.endsWith('/')) {
         base += '/';
@@ -4074,24 +4070,23 @@ const checkKey = (key) => {
     }
 };
 exports.checkKey = checkKey;
-const options = () => {
+const debugOptions = () => {
     let stdout = '';
     let stderr = '';
-    const listeners = {
+    const options = { listeners: {} };
+    options.listeners = {
         stdout: (data) => {
             stdout += data.toString();
-            core_1.default.info(stdout);
         },
         stderr: (data) => {
             stderr += data.toString();
         }
     };
-    return { stdout, stderr, listeners };
+    return { stdout, stderr, options };
 };
 const exec = (command) => __awaiter(void 0, void 0, void 0, function* () {
-    const { stdout, stderr, listeners } = options();
-    core_1.default.info(stdout);
-    yield e.exec(command, [], { listeners });
+    const { stdout, stderr, options } = debugOptions();
+    yield e.exec(command, [], options);
     return { stdout, stderr };
 });
 exports.exec = exec;

@@ -1,6 +1,5 @@
 import * as e from '@actions/exec'
 import * as p from 'path'
-import core from '@actions/core'
 
 export const getCacheBase = (base: string): string => {
   if (base && !base.endsWith('/')) {
@@ -47,27 +46,30 @@ export const checkKey = (key: string): void => {
   }
 }
 
-const options = (): {stdout: string; stderr: string; listeners: {}} => {
+const debugOptions = (): {
+  stdout: string
+  stderr: string
+  options: {listeners: {}}
+} => {
   let stdout = ''
   let stderr = ''
 
-  const listeners = {
+  const options = {listeners: {}}
+  options.listeners = {
     stdout: (data: Buffer) => {
       stdout += data.toString()
-      core.info(stdout)
     },
     stderr: (data: Buffer) => {
       stderr += data.toString()
     }
   }
-  return {stdout, stderr, listeners}
+  return {stdout, stderr, options}
 }
 
 export const exec = async (
   command: string
 ): Promise<{stdout: string; stderr: string}> => {
-  const {stdout, stderr, listeners} = options()
-  core.info(stdout)
-  await e.exec(command, [], {listeners})
+  const {stdout, stderr, options} = debugOptions()
+  await e.exec(command, [], options)
   return {stdout, stderr}
 }
