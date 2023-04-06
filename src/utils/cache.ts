@@ -1,3 +1,4 @@
+import * as e from '@actions/exec'
 import * as p from 'path'
 
 export const getCachePath = (key: string): string => {
@@ -35,7 +36,7 @@ export const checkKey = (key: string): void => {
   }
 }
 
-export const options = (
+const options = (
   stdout: string,
   stderr: string
 ): {stdout: string; stderr: string; listeners: {}} => {
@@ -48,4 +49,12 @@ export const options = (
     }
   }
   return {stdout, stderr, listeners}
+}
+
+export const exec = async (
+  command: string
+): Promise<{stdout: string; stderr: string}> => {
+  const {stdout, stderr, listeners} = options('', '')
+  await e.exec(command, [], {listeners})
+  return {stdout, stderr}
 }

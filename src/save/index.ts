@@ -1,6 +1,5 @@
 import * as core from '@actions/core'
-import * as exec from '@actions/exec'
-import {options} from '../utils/cache'
+import {exec} from '../utils/cache'
 
 async function run(): Promise<void> {
   try {
@@ -11,10 +10,9 @@ async function run(): Promise<void> {
       const cachePath = core.getState('cache-path')
       const path = core.getState('path')
 
-      const {stdout, stderr, listeners} = options('', '')
-      await exec.exec(`mkdir -p ${cachePath} && mv ${path} ${cachePath}`, [], {
-        listeners
-      })
+      const {stdout, stderr} = await exec(
+        `mkdir -p ${cachePath} && mv ${path} ${cachePath}`
+      )
 
       core.debug(stdout)
       if (stderr) core.error(stderr)
