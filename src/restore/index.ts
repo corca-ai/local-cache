@@ -18,10 +18,7 @@ async function run(): Promise<void> {
 
     const status = await exec.exec(
       `/bin/bash -c "test -d ${cachePath} ; echo $? `,
-      [],
-      {
-        ignoreReturnCode: true
-      }
+      []
     )
     await exec.exec(`check cache ended with status ${status}`)
 
