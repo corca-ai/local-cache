@@ -3977,7 +3977,7 @@ function run() {
             core.saveState('cache-hit', String(cacheHit));
             if (cacheHit === true) {
                 ;
-                ({ stdout, stderr } = yield (0, cache_1.exec)(`ln -s ${cachePath} ${path}`));
+                ({ stdout, stderr } = yield (0, cache_1.exec)(`ln -s ${cachePath} ./${path}`));
                 core.debug(stdout);
                 if (stderr)
                     core.error(stderr);

@@ -33,7 +33,7 @@ async function run(): Promise<void> {
     core.saveState('cache-hit', String(cacheHit))
 
     if (cacheHit === true) {
-      ;({stdout, stderr} = await exec(`ln -s ${cachePath} ${path}`))
+      ;({stdout, stderr} = await exec(`ln -s ${cachePath} ./${path}`))
 
       core.debug(stdout)
       if (stderr) core.error(stderr)
