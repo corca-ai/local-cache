@@ -10,9 +10,8 @@ async function run(): Promise<void> {
       const cachePath = core.getState('cache-path')
       const path = core.getState('path')
 
-      const {stdout, stderr} = await exec(
-        `/bin/bash -c "mkdir -p ${cachePath} && mv ./${path} ${cachePath}"`
-      )
+      await exec(`mkdir -p ${cachePath}`)
+      const {stdout, stderr} = await exec(`mv ./${path} ${cachePath}`)
 
       core.debug(stdout)
       if (stderr) core.error(stderr)
