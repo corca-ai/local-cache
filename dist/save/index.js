@@ -4030,8 +4030,8 @@ const getCacheBase = (base) => {
     return base;
 };
 exports.getCacheBase = getCacheBase;
-const getCachePath = (key, path, base) => {
-    return p.join((0, exports.getCacheBase)(base), key, path);
+const getCachePath = (key, base) => {
+    return p.join((0, exports.getCacheBase)(base), key);
 };
 exports.getCachePath = getCachePath;
 class ValidationError extends Error {

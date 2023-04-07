@@ -1,4 +1,5 @@
 import * as core from '@actions/core'
+import * as p from 'path'
 import {
   checkKey,
   checkPaths,
@@ -13,7 +14,7 @@ async function run(): Promise<void> {
     const base = core.getInput('base')
     const path = core.getInput('path')
     const cacheBase = getCacheBase(base)
-    const cachePath = getCachePath(key, path, base)
+    const cachePath = getCachePath(key, base)
 
     checkKey(key)
     checkPaths([path])
@@ -33,7 +34,9 @@ async function run(): Promise<void> {
     core.saveState('cache-hit', String(cacheHit))
 
     if (cacheHit === true) {
-      ;({stdout, stderr} = await exec(`ln -s ${cachePath} ./${path}`))
+      ;({stdout, stderr} = await exec(
+        `ln -s ${p.join(cachePath, path)} ./${path}`
+      ))
 
       core.debug(stdout)
       if (stderr) core.error(stderr)

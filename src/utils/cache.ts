@@ -8,12 +8,8 @@ export const getCacheBase = (base: string): string => {
   return base
 }
 
-export const getCachePath = (
-  key: string,
-  path: string,
-  base: string
-): string => {
-  return p.join(getCacheBase(base), key, path)
+export const getCachePath = (key: string, base: string): string => {
+  return p.join(getCacheBase(base), key)
 }
 
 class ValidationError extends Error {
