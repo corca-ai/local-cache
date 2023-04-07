@@ -23,6 +23,7 @@ async function run(): Promise<void> {
     core.saveState('path', path)
     core.saveState('cache-path', cachePath)
 
+    await exec(`mkdir -p ${cacheBase}`)
     let {stdout, stderr} = await exec(`find ${cacheBase} -name ${key} -type d`)
     if (stdout) await exec(`echo "found ${stdout}"`)
 
