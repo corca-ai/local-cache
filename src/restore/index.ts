@@ -35,7 +35,7 @@ async function run(): Promise<void> {
 
     if (cacheHit === true) {
       ;({stdout, stderr} = await exec(
-        `ln -s ${p.join(cachePath, path)} ./${path}`
+        `bin/bash -c "ln -s ${p.join(cachePath, path)} ./${path}"`
       ))
 
       core.debug(stdout)
