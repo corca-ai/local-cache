@@ -4,7 +4,7 @@ inputs:
   base:
     description: 'A top directory to cache and restore'
     required: false
-    default: '$HOME/.cache/'
+    default: '../../../cache'
   path:
     description: 'A directory to cache and restore.'
     required: true
