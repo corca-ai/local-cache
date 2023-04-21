@@ -1,16 +1,19 @@
 name: 'local-cache'
-description: 'Cache artifacts to improve workflow execution time on self hosted machine'
+description: 'Cache dependencies and build outputs to improve workflow execution time on self hosted machine'
 inputs:
-  base:
-    description: 'A top directory to cache and restore'
-    required: false
-    default: '/home/ubuntu/.cache'
   path:
-    description: 'A directory to cache and restore.'
+    description: 'A directory to save and restore cache.'
     required: true
   key:
-    description: 'An explicit key for a cache entry.'
+    description: 'An explicit key for a cache.'
     required: true
+  base:
+    description: 'A base directory to save and restore cache.'
+    required: false
+    default: '/home/ubuntu/.cache'
+  clean-key:
+    description: 'If set, caches are cleaned up automatically at post action stage.'
+    required: false
 outputs:
   cache-hit:
     description: 'Cache hit or not'
