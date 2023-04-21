@@ -3982,7 +3982,7 @@ function run() {
             if (cleanKey) {
                 const cleanCacheCount = yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} | wc -l"`);
                 if (Number(cleanCacheCount.stdout) > 1) {
-                    yield (0, cache_1.exec)(`find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} -delete`);
+                    yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} -delete"`);
                 }
             }
         }
