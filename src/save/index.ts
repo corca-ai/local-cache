@@ -1,5 +1,4 @@
 import * as core from '@actions/core'
-import * as p from 'path'
 import {exec} from '../utils/cache'
 
 async function run(): Promise<void> {
@@ -28,11 +27,11 @@ async function run(): Promise<void> {
     const CLEAN_TIME = 7
     if (cleanKey) {
       const cleanCacheCount = await exec(
-        `find ${cacheBase} -name "${key}*" -type d -atime +${CLEAN_TIME} | wc -l`
+        `find ${cacheBase} -maxdepth 1 -name "${key}*" -type d -atime +${CLEAN_TIME} | wc -l`
       )
       if (Number(cleanCacheCount.stdout) > 1) {
         await exec(
-          `find ${cacheBase} -name "${key}*" -type d -atime +${CLEAN_TIME} -delete`
+          `find ${cacheBase} -maxdepth 1 -name "${key}*" -type d -atime +${CLEAN_TIME} -delete`
         )
       }
     }

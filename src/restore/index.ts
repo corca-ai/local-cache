@@ -25,7 +25,9 @@ async function run(): Promise<void> {
     core.saveState('cache-path', cachePath)
 
     await exec(`mkdir -p ${cacheBase}`)
-    const find = await exec(`find ${cacheBase} -name ${key} -type d`)
+    const find = await exec(
+      `find ${cacheBase} -maxdepth 1 -name ${key} -type d`
+    )
     const cacheHit = find.stdout ? true : false
     core.saveState('cache-hit', String(cacheHit))
     core.setOutput('cache-hit', String(cacheHit))
