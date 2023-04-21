@@ -1,4 +1,5 @@
 import * as core from '@actions/core'
+import * as p from 'path'
 import {exec} from '../utils/cache'
 
 async function run(): Promise<void> {
@@ -19,6 +20,21 @@ async function run(): Promise<void> {
     } else {
       core.info(`Cache hit on the key ${key}`)
       core.info(`,not saving cache`)
+    }
+
+    // clean up caches
+    const cacheBase = core.getState('cache-base')
+    const cleanKey = core.getInput('clean-key')
+    const CLEAN_TIME = 7
+    if (cleanKey) {
+      const cleanCacheCount = await exec(
+        `find ${cacheBase} -name "${key}*" -type d -atime +${CLEAN_TIME} | wc -l`
+      )
+      if (Number(cleanCacheCount.stdout) > 1) {
+        await exec(
+          `find ${cacheBase} -name "${key}*" -type d -atime +${CLEAN_TIME} -delete`
+        )
+      }
     }
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
