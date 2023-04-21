@@ -21,24 +21,24 @@ async function run(): Promise<void> {
 
     core.saveState('key', key)
     core.saveState('path', path)
+    core.saveState('cache-base', cacheBase)
     core.saveState('cache-path', cachePath)
 
     await exec(`mkdir -p ${cacheBase}`)
-    let {stdout, stderr} = await exec(`find ${cacheBase} -name ${key} -type d`)
-    if (stdout) await exec(`echo "found ${stdout}"`)
+    const find = await exec(`find ${cacheBase} -name ${key} -type d`)
 
-    const cacheHit = stdout ? true : false
-    core.setOutput('cache-hit', String(cacheHit))
+    const cacheHit = find.stdout ? true : false
     core.saveState('cache-hit', String(cacheHit))
+    core.setOutput('cache-hit', String(cacheHit))
 
     if (cacheHit === true) {
-      ;({stdout, stderr} = await exec(
+      const ln = await exec(
         `ln -s ${p.join(cachePath, path.split('/').slice(-1)[0])} ./${path}`
-      ))
+      )
 
-      core.debug(stdout)
-      if (stderr) core.error(stderr)
-      if (!stderr) core.info(`Cache restored with key ${key}`)
+      core.debug(ln.stdout)
+      if (ln.stderr) core.error(ln.stderr)
+      if (!ln.stderr) core.info(`Cache restored with key ${key}`)
     } else {
       core.info(`Cache not found for ${key}`)
     }

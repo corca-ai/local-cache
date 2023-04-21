@@ -11,11 +11,11 @@ async function run(): Promise<void> {
       const path = core.getState('path')
 
       await exec(`mkdir -p ${cachePath}`)
-      const {stdout, stderr} = await exec(`mv ./${path} ${cachePath}`)
+      const mv = await exec(`mv ./${path} ${cachePath}`)
 
-      core.debug(stdout)
-      if (stderr) core.error(stderr)
-      if (!stderr) core.info(`Cache saved with key ${key}`)
+      core.debug(mv.stdout)
+      if (mv.stderr) core.error(mv.stderr)
+      if (!mv.stderr) core.info(`Cache saved with key ${key}`)
     } else {
       core.info(`Cache hit on the key ${key}`)
       core.info(`,not saving cache`)
