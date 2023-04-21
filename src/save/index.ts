@@ -27,11 +27,11 @@ async function run(): Promise<void> {
     const CLEAN_TIME = 7
     if (cleanKey) {
       const cleanCacheCount = await exec(
-        `/bin/bash find ${cacheBase} -maxdepth 1 -name "${cleanKey}*" -type d -atime +${CLEAN_TIME} | wc -l`
+        `find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} | wc -l`
       )
       if (Number(cleanCacheCount.stdout) > 1) {
         await exec(
-          `find ${cacheBase} -maxdepth 1 -name "${cleanKey}*" -type d -atime +${CLEAN_TIME} -delete`
+          `find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} -delete`
         )
       }
     }
