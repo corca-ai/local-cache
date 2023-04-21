@@ -3968,21 +3968,19 @@ function run() {
             (0, cache_1.checkPaths)([path]);
             core.saveState('key', key);
             core.saveState('path', path);
+            core.saveState('cache-base', cacheBase);
             core.saveState('cache-path', cachePath);
             yield (0, cache_1.exec)(`mkdir -p ${cacheBase}`);
-            let { stdout, stderr } = yield (0, cache_1.exec)(`find ${cacheBase} -name ${key} -type d`);
-            if (stdout)
-                yield (0, cache_1.exec)(`echo "found ${stdout}"`);
-            const cacheHit = stdout ? true : false;
-            core.setOutput('cache-hit', String(cacheHit));
+            const find = yield (0, cache_1.exec)(`find ${cacheBase} -maxdepth 1 -name ${key} -type d`);
+            const cacheHit = find.stdout ? true : false;
             core.saveState('cache-hit', String(cacheHit));
+            core.setOutput('cache-hit', String(cacheHit));
             if (cacheHit === true) {
-                ;
-                ({ stdout, stderr } = yield (0, cache_1.exec)(`ln -s ${p.join(cachePath, path.split('/').slice(-1)[0])} ./${path}`));
-                core.debug(stdout);
-                if (stderr)
-                    core.error(stderr);
-                if (!stderr)
+                const ln = yield (0, cache_1.exec)(`ln -s ${p.join(cachePath, path.split('/').slice(-1)[0])} ./${path}`);
+                core.debug(ln.stdout);
+                if (ln.stderr)
+                    core.error(ln.stderr);
+                if (!ln.stderr)
                     core.info(`Cache restored with key ${key}`);
             }
             else {
