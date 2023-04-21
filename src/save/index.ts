@@ -26,13 +26,22 @@ async function run(): Promise<void> {
     const cleanKey = core.getInput('clean-key')
     const CLEAN_TIME = 7
     if (cleanKey) {
+      const cacheCount = await exec(
+        `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime -${CLEAN_TIME} | wc -l"`
+      )
       const cleanCacheCount = await exec(
         `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} | wc -l"`
       )
-      if (Number(cleanCacheCount.stdout) > 1) {
+      if (Number(cacheCount.stdout) >= 1) {
         await exec(
           `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} -delete"`
         )
+      } else {
+        if (Number(cleanCacheCount.stdout) > 1) {
+          await exec(
+            `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} -ls | tail -n +2 | xargs rm -rf"`
+          )
+        }
       }
     }
   } catch (error) {
