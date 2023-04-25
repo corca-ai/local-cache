@@ -39,7 +39,7 @@ async function run(): Promise<void> {
       } else {
         if (Number(cleanCacheCount.stdout) > 1) {
           await exec(
-            `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} -ls | tail -n +2 | xargs rm -rf"`
+            `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} -printf '%TF %p\n' | sort -k 1 -r | tail -n +2 | xargs rm -rf"`
           )
         }
       }
