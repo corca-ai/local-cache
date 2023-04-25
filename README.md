@@ -8,7 +8,7 @@ Artifacts are cached in the /home/ubuntu/.cache by default.
 ### v2
 
 - Caches that have not been accessed over 7 days are cleaned up automatically at post action stage by clean-key.
-- If there is only one cache corresponding to the clean-key, do not clean it.
+- If there is only one cache corresponding to the clean-key, do not clean it. (However, if it's been 30 days, clean up all.)
 
 See the [v1 README.md](https://github.com/corca-ai/local-cache/blob/v1/README.md) for older updates.
 
@@ -45,7 +45,7 @@ Default: /home/ubuntu/.cache
 **Optional**
 
 If set, caches that have not been accessed over 7 days are cleaned up automatically at post action stage by clean-key.
-If there is only one cache corresponding to the clean-key, do not clean it.
+If there is only one cache corresponding to the clean-key, do not clean it. (However, if it's been 30 days, clean up all.)
 
 Default: /
 

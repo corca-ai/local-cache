@@ -21,25 +21,38 @@ async function run(): Promise<void> {
       core.info(`,not saving cache`)
     }
 
-    // clean up caches
+    /* 
+      clean up caches
+    */
     const cacheBase = core.getState('cache-base')
     const cleanKey = core.getInput('clean-key')
-    const CLEAN_TIME = 7
+    const SOFT_CLEAN_TIME = 7
+    const HARD_CLEAN_TIME = 30
     if (cleanKey) {
       const cacheCount = await exec(
-        `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime -${CLEAN_TIME} | wc -l"`
+        `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime -${SOFT_CLEAN_TIME} | wc -l"`
       )
-      const cleanCacheCount = await exec(
-        `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} | wc -l"`
+      const softCleanCacheCount = await exec(
+        `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${SOFT_CLEAN_TIME} | wc -l"`
       )
+      const hardCleanCacheCount = await exec(
+        `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${HARD_CLEAN_TIME} | wc -l"`
+      )
+      // hard clean over 30 days
+      if (Number(hardCleanCacheCount.stdout) >= 1) {
+        await exec(
+          `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${HARD_CLEAN_TIME} -delete"`
+        )
+      }
+      // soft clean over 7 days
       if (Number(cacheCount.stdout) >= 1) {
         await exec(
-          `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} -delete"`
+          `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${SOFT_CLEAN_TIME} -delete"`
         )
       } else {
-        if (Number(cleanCacheCount.stdout) > 1) {
+        if (Number(softCleanCacheCount.stdout) > 1) {
           await exec(
-            `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} -printf '%TF %p\n' | sort -k 1 -r | tail -n +2 | xargs rm -rf"`
+            `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${SOFT_CLEAN_TIME} -printf '%TF %p\n' | sort -k 1 -r | tail -n +2 | xargs rm -rf"`
           )
         }
       }
