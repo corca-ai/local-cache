@@ -26,36 +26,12 @@ async function run(): Promise<void> {
     */
     const cacheBase = core.getState('cache-base')
     const cleanKey = core.getInput('clean-key')
-    const SOFT_CLEAN_TIME = 7
-    const HARD_CLEAN_TIME = 30
+    const CLEAN_TIME = 7
+
     if (cleanKey) {
-      const cacheCount = await exec(
-        `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime -${SOFT_CLEAN_TIME} | wc -l"`
+      await exec(
+        `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} -delete"`
       )
-      const softCleanCacheCount = await exec(
-        `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${SOFT_CLEAN_TIME} | wc -l"`
-      )
-      const hardCleanCacheCount = await exec(
-        `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${HARD_CLEAN_TIME} | wc -l"`
-      )
-      // hard clean over 30 days
-      if (Number(hardCleanCacheCount.stdout) >= 1) {
-        await exec(
-          `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${HARD_CLEAN_TIME} -delete"`
-        )
-      }
-      // soft clean over 7 days
-      if (Number(cacheCount.stdout) >= 1) {
-        await exec(
-          `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${SOFT_CLEAN_TIME} -delete"`
-        )
-      } else {
-        if (Number(softCleanCacheCount.stdout) > 1) {
-          await exec(
-            `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${SOFT_CLEAN_TIME} -printf '%TF %p\n' | sort -k 1 -r | tail -n +2 | xargs rm -rf"`
-          )
-        }
-      }
     }
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
