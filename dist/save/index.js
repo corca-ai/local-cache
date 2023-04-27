@@ -3980,25 +3980,9 @@ function run() {
             */
             const cacheBase = core.getState('cache-base');
             const cleanKey = core.getInput('clean-key');
-            const SOFT_CLEAN_TIME = 7;
-            const HARD_CLEAN_TIME = 30;
+            const CLEAN_TIME = 7;
             if (cleanKey) {
-                const cacheCount = yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime -${SOFT_CLEAN_TIME} | wc -l"`);
-                const softCleanCacheCount = yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${SOFT_CLEAN_TIME} | wc -l"`);
-                const hardCleanCacheCount = yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${HARD_CLEAN_TIME} | wc -l"`);
-                // hard clean over 30 days
-                if (Number(hardCleanCacheCount.stdout) >= 1) {
-                    yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${HARD_CLEAN_TIME} -delete"`);
-                }
-                // soft clean over 7 days
-                if (Number(cacheCount.stdout) >= 1) {
-                    yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${SOFT_CLEAN_TIME} -delete"`);
-                }
-                else {
-                    if (Number(softCleanCacheCount.stdout) > 1) {
-                        yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${SOFT_CLEAN_TIME} -printf '%TF %p\n' | sort -k 1 -r | tail -n +2 | xargs rm -rf"`);
-                    }
-                }
+                yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} -delete"`);
             }
         }
         catch (error) {
