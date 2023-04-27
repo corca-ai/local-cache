@@ -11,14 +11,27 @@ async function run(): Promise<void> {
       const path = core.getState('path')
 
       await exec(`mkdir -p ${cachePath}`)
-      const {stdout, stderr} = await exec(`mv ./${path} ${cachePath}`)
+      const mv = await exec(`mv ./${path} ${cachePath}`)
 
-      core.debug(stdout)
-      if (stderr) core.error(stderr)
-      if (!stderr) core.info(`Cache saved with key ${key}`)
+      core.debug(mv.stdout)
+      if (mv.stderr) core.error(mv.stderr)
+      if (!mv.stderr) core.info(`Cache saved with key ${key}`)
     } else {
       core.info(`Cache hit on the key ${key}`)
       core.info(`,not saving cache`)
+    }
+
+    /* 
+      clean up caches
+    */
+    const cacheBase = core.getState('cache-base')
+    const cleanKey = core.getInput('clean-key')
+    const CLEAN_TIME = 7
+
+    if (cleanKey) {
+      await exec(
+        `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} -delete"`
+      )
     }
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)

@@ -3964,16 +3964,25 @@ function run() {
                 const cachePath = core.getState('cache-path');
                 const path = core.getState('path');
                 yield (0, cache_1.exec)(`mkdir -p ${cachePath}`);
-                const { stdout, stderr } = yield (0, cache_1.exec)(`mv ./${path} ${cachePath}`);
-                core.debug(stdout);
-                if (stderr)
-                    core.error(stderr);
-                if (!stderr)
+                const mv = yield (0, cache_1.exec)(`mv ./${path} ${cachePath}`);
+                core.debug(mv.stdout);
+                if (mv.stderr)
+                    core.error(mv.stderr);
+                if (!mv.stderr)
                     core.info(`Cache saved with key ${key}`);
             }
             else {
                 core.info(`Cache hit on the key ${key}`);
                 core.info(`,not saving cache`);
+            }
+            /*
+              clean up caches
+            */
+            const cacheBase = core.getState('cache-base');
+            const cleanKey = core.getInput('clean-key');
+            const CLEAN_TIME = 7;
+            if (cleanKey) {
+                yield (0, cache_1.exec)(`/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} -delete"`);
             }
         }
         catch (error) {
