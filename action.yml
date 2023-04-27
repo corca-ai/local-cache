@@ -1,4 +1,4 @@
-name: 'self-cache'
+name: 'local cache'
 description: 'Cache dependencies and build outputs to improve workflow execution time on self hosted machine'
 inputs:
   path:
