@@ -1,11 +1,24 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'local-cache'
+description: 'Cache dependencies and build outputs to improve workflow execution time on self hosted machine'
 inputs:
-  milliseconds: # change this
+  path:
+    description: 'A directory to save and restore cache.'
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  key:
+    description: 'An explicit key for a cache.'
+    required: true
+  base:
+    description: 'A base directory to save and restore cache.'
+    required: false
+    default: '/home/ubuntu/.cache'
+  clean-key:
+    description: 'If set, caches are cleaned up automatically at post action stage.'
+    required: false
+outputs:
+  cache-hit:
+    description: 'Cache hit or not'
 runs:
   using: 'node16'
-  main: 'dist/index.js'
+  main: 'dist/restore/index.js'
+  post: 'dist/save/index.js'
+  post-if: success()

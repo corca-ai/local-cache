@@ -1,105 +1,87 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+# Local Cache action
 
-# Create a JavaScript Action using TypeScript
+This action allows caching dependencies and build outputs to improve workflow execution time on self hosted machine.
+Artifacts are cached in the /home/ubuntu/.cache by default.
 
-Use this template to bootstrap the creation of a TypeScript action.:rocket:
+## What's New
 
-This template includes compilation support, tests, a validation workflow, publishing, and versioning guidance.  
+### v2
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+- Caches that have not been accessed over 7 days are cleaned up automatically at post action stage by clean-key.
 
-## Create an action from this template
+See the [v1 README.md](https://github.com/corca-ai/local-cache/blob/v1/README.md) for older updates.
 
-Click the `Use this Template` and provide the new repo details for your action
+## Usage
 
-## Code in Main
+### Pre-requisites
 
-> First, you'll need to have a reasonably modern version of `node` handy. This won't work with versions older than 9, for instance.
+Create a workflow .yml file in your repository's .github/workflows directory.
 
-Install the dependencies  
-```bash
-$ npm install
-```
+### Inputs
 
-Build the typescript and package it for distribution
-```bash
-$ npm run build && npm run package
-```
+`path`
 
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
+**Required**
 
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
+A directory to save and restore cache.
 
-...
-```
+`key`
 
-## Change action.yml
+**Required**
 
-The action.yml defines the inputs and output for your action.
+An explicit key for a cache.
 
-Update the action.yml with your name, description, inputs and outputs for your action.
+`base`
 
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
+**Optional**
 
-## Change the Code
+A base directory to save and restore cache.
 
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
+Default: /home/ubuntu/.cache
 
-```javascript
-import * as core from '@actions/core';
-...
+`clean-key`
 
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
+**Optional**
 
-run()
-```
+If set, caches that have not been accessed over 7 days are cleaned up automatically at post action stage by clean-key.
 
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
+### Outputs
 
-## Publish to a distribution branch
+`cache-hit`
 
-Actions are run from GitHub repos so we will checkin the packed dist folder. 
+Cache hit or not
 
-Then run [ncc](https://github.com/zeit/ncc) and push the results:
-```bash
-$ npm run package
-$ git add dist
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
+## Example cache workflow
 
-Note: We recommend using the `--license` option for ncc, which will create a license file for all of the production node modules used in your project.
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing `./` in a workflow in your repo (see [test.yml](.github/workflows/test.yml))
+**Restoring and saving cache using a single action**
 
 ```yaml
-uses: ./
-with:
-  milliseconds: 1000
+name: Caching Primes
+
+on: push
+
+jobs:
+  build:
+    runs-on: [self-hosted]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache dependencies
+        id: cache
+        uses: corca-ai/local-cache@v2
+        with:
+          path: path/to/dependencies
+          key: ${{ hashFiles('**/lockfiles') }}
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: /install.sh
+
+      - name: Use dependencies
+        run: /run.sh
 ```
 
-See the [actions tab](https://github.com/actions/typescript-action/actions) for runs of this action! :rocket:
+## Cache Limits
 
-## Usage:
-
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and latest V1 action
+Cache limits are defined by the disk space of self-hosted runners. Caches that have not been accessed over 7 days can be cleaned up at post action stage by `clean-key`, but if you still run out of disk space, you need to manage runners by increasing disk capacity or removing cache on your own.
