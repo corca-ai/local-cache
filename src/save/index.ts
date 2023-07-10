@@ -21,18 +21,6 @@ async function run(): Promise<void> {
       core.info(`,not saving cache`)
     }
 
-    /* 
-      clean up caches
-    */
-    const cacheBase = core.getState('cache-base')
-    const cleanKey = core.getInput('clean-key')
-    const CLEAN_TIME = 7
-
-    if (cleanKey) {
-      await exec(
-        `/bin/bash -c "find ${cacheBase} -maxdepth 1 -name '${cleanKey}*' -type d -atime +${CLEAN_TIME} -exec rm -rf {} +"`
-      )
-    }
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
