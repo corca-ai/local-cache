@@ -23,7 +23,7 @@ async function run(): Promise<void> {
         )
       }
     } catch (error) {
-      if (error instanceof Error) core.setFailed(error.message)
+      if (error instanceof Error) core.warning(error.message)
     }
 
   try {
