@@ -16,40 +16,20 @@ See the [v1 README.md](https://github.com/corca-ai/local-cache/blob/v1/README.md
 ### Pre-requisites
 
 Create a workflow .yml file in your repository's .github/workflows directory.
-
 ### Inputs
 
-`path`
-
-**Required**
-
-A directory to save and restore cache.
-
-`key`
-
-**Required**
-
-An explicit key for a cache.
-
-`base`
-
-**Optional**
-
-A base directory to save and restore cache.
-
-Default: /home/ubuntu/.cache
-
-`clean-key`
-
-**Optional**
-
-If set, caches that have not been accessed over 7 days are cleaned up automatically at post action stage by clean-key.
+| Parameter   | Required/Optional | Description                                                                                   | Default                      |
+|-------------|-------------------|-----------------------------------------------------------------------------------------------|------------------------------|
+| `path`      | **Required**      | A directory to save and restore cache.                                                        | -                            |
+| `key`       | **Required**      | An explicit key for a cache.                                                                  | -                            |
+| `base`      | **Optional**      | A base directory to save and restore cache.                                                   | /home/ubuntu/.cache          |
+| `clean-key` | **Optional**      | If set, caches that have not been accessed over 7 days are cleaned up automatically at post action stage by clean-key. | -   |
 
 ### Outputs
 
-`cache-hit`
-
-Cache hit or not
+| Output      | Description                                                                                   |
+|-------------|-----------------------------------------------------------------------------------------------|
+| `cache-hit` | Cache hit or not                                                                              |
 
 ## Example cache workflow
 
